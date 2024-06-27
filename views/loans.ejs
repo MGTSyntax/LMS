@@ -1,0 +1,66 @@
+<!-- views/loans.ejs -->
+
+<%- include("templates/header.ejs", {title: "LMS - Loan Items" }) %>
+    <div class="whole-content">
+        <%- include("templates/navbar.ejs") %>
+            <div class="content">
+                <h1>Loan Items</h1>
+                
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Transaction No.</th>
+                                <th>Employee No.</th>
+                                <th>Employee Name</th>
+                                <th>Loan Date</th>
+                                <th>Loan Description</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% loanData.forEach(loan=> { %>
+                                <tr>
+                                    <td>
+                                        <%= loan.lnm_transactionno %>
+                                    </td>
+                                    <td>
+                                        <%= loan.lnm_employeeno %>
+                                    </td>
+                                    <td>
+                                        <%= loan.empname %>
+                                    </td>
+                                    <td>
+                                        <%= loan.lnm_date %>
+                                    </td>
+                                    <td>
+                                        <%= loan.deduction_description %>
+                                    </td>
+                                    <td>
+                                        <%= loan.lnm_amount %>
+                                    </td>
+                                    <td>
+                                        <%= loan.lnm_balance %>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <% if (currentPage> 1) { %>
+                        <a href="/loans?page=<%= currentPage - 1 %>">Previous</a>
+                    <% } %>
+    
+                    <span>Page <%= currentPage %> of <%= totalPages %></span>
+
+                    <% if (currentPage < totalPages) { %>
+                        <a href="/loans?page=<%= currentPage + 1 %>">Next</a>
+                    <% } %>
+                </div>
+                
+            </div>
+    </div>
+<%- include("templates/footer.ejs") %>

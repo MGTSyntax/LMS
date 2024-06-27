@@ -1,0 +1,88 @@
+<%- include("templates/header.ejs", {title: "LMS - Loan Uploader" }) %>
+    <div class="whole-content">
+        <%- include("templates/navbar.ejs") %>
+            <div class="content">
+                <h1>Upload Loan From Excel</h1>
+
+                <div class="custom-dropdown">
+                    <div class="deductionGroup">
+                        <span>Choose a Deduction</span>
+                        <div class="selection">
+                            <div class="inputContainer">
+                                <label for="deductionType">Type:</label>
+                                <select id="deductionType">
+                                    <option value="">Select Deduction Type</option>
+                                    <% deductionTypes.forEach(type=> { %>
+                                        <option value="<%= type.value %>" class="custom-option">
+                                            <%= type.label %>
+                                        </option>
+                                        <% }); %>
+                                </select>
+                            </div>
+                            <div class="inputContainer">
+                                <label for="deductionDescription">Description:</label>
+                                <select id="deductionDescription">
+                                    <option value="">Select Deduction Description</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="selection">
+                        <div class="inputContainer">
+                            <label for="preparedBy">Prepared by</label>
+                            <select name="" id="preparedBy">
+                                <option value="">Prepared by</option>
+                                <% allusers.forEach(user=> { %>
+                                    <option value="<%= user.user_empno %>">
+                                        <%= user.nameOfUser %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+                        <div class="inputContainer">
+                            <label for="approvedBy">Approved by</label>
+                            <select name="" id="approvedBy">
+                                <option value="">Approved by</option>
+                                <% allusers.forEach(user=> { %>
+                                    <option value="<%= user.user_empno %>">
+                                        <%= user.nameOfUser %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="selection">
+                        <div class="inputContainer">
+                            <label>Select Excel File</label>
+                            <input type="file" id="loanExcelFile" name="loanExcelFile" accept=".xlsx, .xls" required disabled>
+                        </div>
+                        <div class="inputContainer">
+                            <button id="uploadButton" disabled>Upload Excel Data</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="msg">
+                    <p id="noDataMessage">No data available to display.</p>
+                </div>
+
+                <div id="excelDetailsContainer">
+                    <table>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="download-link-container"></div>
+
+                <div id="modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p id="modalMsg"></p>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+    <%- include("templates/footer.ejs") %>
