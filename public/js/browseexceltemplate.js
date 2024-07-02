@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showModal(message) {
         modalMessage.textContent = message;
-        customModal.style.display = 'flex';
+        customModal.style.display = 'block';
     }
 
     // Close the modal when the user clicks on <span> (x)
