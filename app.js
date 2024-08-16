@@ -79,14 +79,15 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
         const mappedData = Promise.all(actualData.map(async (row) => ({
             lnm_employeeno: row[0],
             lnm_employeename: row[1],
-            lnm_amount: row[2]
+            lnm_amount: row[2],
+            lnm_terms: row[3]
         })));
 
         const qualifiedData = [];
         const unqualifiedData = [];
 
         for (const loanData of await mappedData) {
-            const { lnm_employeeno, lnm_employeename, lnm_amount } = loanData;
+            const { lnm_employeeno, lnm_employeename, lnm_amount, lnm_terms } = loanData;
 
             const isQualified = await isEmployeeQualified(lnm_employeeno);
             const hasExistingLoan = await isLoanExisting(lnm_employeeno, selectedDeductionCode);
@@ -106,7 +107,7 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
                         lnm_employeeno,
                         selectedDeductionCode,
                         lnm_amount,
-                        lnm_amount,
+                        (lnm_amount/lnm_terms),
                         preparedByCode,
                         approvedByCode,
                         'True',
@@ -116,16 +117,18 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
                         'Saved Using Uploader'
                     );
 
-                    await createLoanPayment(
-                        formattedTransactionNumber,
-                        1,
-                        lnm_amount,
-                        '--',
-                        '',
-                        '',
-                        '',
-                        lnm_amount
-                    );
+                    for (let i = 1; i <= lnm_terms; i++) {
+                        await createLoanPayment(
+                            formattedTransactionNumber,
+                            i,
+                            (lnm_amount / lnm_terms),
+                            '--',
+                            '',
+                            '',
+                            '',
+                            (lnm_amount / lnm_terms)
+                        );
+                    }
 
                     await updateLnNum(transactionNumber);
                     qualifiedData.push(loanData);
@@ -136,7 +139,7 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
                 }
             } else {
                 const unQReason = !isQualified ? "Employee not exists" : "Employee has existing loan";
-                unqualifiedData.push(`${lnm_employeeno},${lnm_employeename},${lnm_amount},${unQReason}\n`);
+                unqualifiedData.push(`${lnm_employeeno},${lnm_employeename},${lnm_amount},${lnm_terms},${unQReason}\n`);
             };
         };
 

@@ -54,7 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loanExcelFile.addEventListener('change', (event) => {
         const tableContainer = document.getElementById('excelDetailsContainer');
+        const downloadLinkContainer = document.getElementById('download-link-container');
         tableContainer.innerHTML = '';
+        downloadLinkContainer.innerHTML = '';
 
         if (event.currentTarget.value.length > 0) {
             uploadButton.disabled = false;

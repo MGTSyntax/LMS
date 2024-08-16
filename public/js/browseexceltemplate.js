@@ -11,10 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedDeductionCode, preparedByCode, approvedByCode;
 
+    // Clear "Prepared By", "Approved By", and file input on page load
+    preparedBySelect.selectedIndex = 0; // Reset the "Prepared By" dropdown
+    approvedBySelect.selectedIndex = 0; // Reset the "Approved By" dropdown
+    fileInput.value = ''; // Clear the file input
+
+    // Disable upload button initially
+    uploadBtn.disabled = true;
+    
     // Check if the elements exist
     if (!deductionDescriptionSelect) {
         return;
-    }
+    } 
 
     deductionDescriptionSelect.addEventListener('change', (event) => {
         selectedDeductionCode = event.target.value;
@@ -139,6 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayHeader = 'Employee Name';
             } else if (header === 'lnm_amount') {
                 displayHeader = 'Loan Amount';
+            } else if (header === 'lnm_terms') {
+                displayHeader = 'Terms';
             }
 
             th.textContent = displayHeader;
@@ -172,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadLinkContainer.appendChild(downloadLink);
 
             downloadLink.addEventListener('click', () => {
-                const headerRow = "EMPLOYEE NUMBER,EMPLOYEE NAME,LOAN AMOUNT,REASON"
+                const headerRow = "EMPLOYEE NUMBER,EMPLOYEE NAME,LOAN AMOUNT,TERMS,REASON"
                 const unqualifiedDataText = headerRow + '\n' + unqualifiedData.join('');
 
                 const blob = new Blob([unqualifiedDataText], { type: 'text/plain;charset=utf-8' });
