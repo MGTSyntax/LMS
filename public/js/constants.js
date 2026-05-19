@@ -1,3 +1,5 @@
+// public/js/constants.js
+
 const deductionOptions = [
     { value: "Government", label: "Government" },
     { value: "Company", label: "Company" },

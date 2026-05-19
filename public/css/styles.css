@@ -93,7 +93,7 @@ th {
   margin: 5px;
 }
 
-.selection select {
+.selection select, input[type="text"] {
   width: 350px;
   margin-left: 5px;
   font-size: 20px;

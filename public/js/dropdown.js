@@ -1,3 +1,5 @@
+// public/js/dropdown.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const deductionTypeSelect = document.getElementById('deductionType');
     const deductionDescriptionSelect = document.getElementById('deductionDescription');

@@ -1,3 +1,5 @@
+// app.js
+
 import express, { json, urlencoded } from 'express';
 import {
     getLoans, createLoan, getTotalLoansCount, getDeductionDesc, isEmployeeQualified,
@@ -7,6 +9,11 @@ import {
 import multer from 'multer';
 import excelJS from 'exceljs';
 import deductionOptions from './public/js/constants.js';
+import session from 'express-session';
+import bcrypt from 'bcrypt';
+import companies from './config/companies.js';
+import { getConnection } from './database.js';
+import { requireLogin } from './middleware/auth.js';
 
 const app = express();
 const resultsPerPage = 15;
@@ -16,43 +23,135 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+    secret: 'loan-management-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false
+    }
+}));
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Function to retrieve loans with pagination
-async function getLoansPaginated(page) {
-    const offset = (page - 1) * resultsPerPage;
-    const loans = await getLoans(offset, resultsPerPage); // Replace with your logic
-    const totalLoans = await getTotalLoansCount(); // Replace with your logic
-    const totalPages = Math.ceil(totalLoans / resultsPerPage);
-    return { loans, totalPages };
-}
-
-app.get('/', async (req, res) => {
-    res.render('index');
+// Login Page Route - GET
+app.get('/login', (req, res) => {
+    res.render('login', {
+        companies
+    });
 });
 
-app.get("/loans", async (req, res, next) => {
+// Login Page Route - POST
+app.post('/login', async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const { loans, totalPages } = await getLoansPaginated(page);
-        res.render('loans', { loanData: loans, currentPage: page, totalPages });
+        const  { company, username, password } = req.body;
+
+        const databaseName = companies[company];
+
+        if(!databaseName) {
+            return res.send('Invalid company!');
+        }
+
+        const db = getConnection(databaseName);
+
+        const [users] = await db.query(`
+            SELECT user_uname,
+                   user_pass,
+                   user_empno,
+                   CONCAT(user_lname, ', ', user_fname) AS fullname
+            FROM fm_user
+            WHERE user_uname = ?
+            LIMIT 1
+        `, [username]);
+            
+        if (users.length === 0) {
+            return res.send('Invalid username or password');
+        }
+
+        const user = users[0];
+
+        // SIMPLE LOGIN (plain password)
+        // Replace with bcrypt later
+
+        if (user.user_pass !== password) {
+            return res.send('Invalid username or password');
+        }
+
+        req.session.user = {
+            username: user.user_uname,
+            empno: user.user_empno,
+            fullname: user.fullname,
+            company,
+            database: databaseName
+        };
+
+        res.redirect('/');
+
     } catch (error) {
-        next(error);
+        console.log(error);
+        res.status(500).send('Login here');
     }
 });
 
-app.get("/upload-loan", async (req, res) => {
+// Logout
+app.get('/logout', (req, res) => {
+
+    req.session.destroy(() => {
+        res.redirect('/login');
+    });
+});
+
+// Dashboard
+app.get('/', requireLogin, async (req, res) => {
+    res.render('index');
+});
+
+// Loan Page Route
+app.get('/loans', requireLogin, async (req, res, next) => {
+
     try {
-        const deductionDesc = await getDeductionDesc(req.query.deductionType);
-        const allusers = await getAllUsers();
+        const db = getConnection(req.session.user.database);
+
+        const page = parseInt(req.query.page) || 1;
+
+        const offset = (page - 1) * resultsPerPage;
+
+        const loans = await getLoans(db, offset, resultsPerPage);
+
+        const totalLoans = await getTotalLoansCount(db);
+
+        const totalPages = Math.ceil(totalLoans / resultsPerPage);
+        
+        res.render('loans', { 
+            loanData: loans, 
+            currentPage: page, 
+            totalPages 
+        });
+
+    } catch (error) {
+        next(error);
+    }
+
+});
+
+// Loan Uploader
+app.get('/upload-loan', requireLogin, async (req, res) => {
+    try {
+        const db = getConnection(req.session.user.database);
+
+        const deductionDesc = await getDeductionDesc(db, req.query.deductionType);
+
+        const allusers = await getAllUsers(db);
+
+        const loggedinUser = req.session.user;
 
         res.render('uploadLoan', {
             deductionTypes,
             deductionDesc,
             actdata: null,
-            allusers
+            allusers,
+            loggedinUser
         });
     } catch (error) {
         console.log(error);
@@ -62,8 +161,11 @@ app.get("/upload-loan", async (req, res) => {
 
 app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
     try {
+        const db = getConnection(req.session.user.database);
+
         const { selectedDeductionCode, preparedByCode, approvedByCode } = req.body;
-        const deductionDesc = await getDeductionDesc(req.query.deductionType);
+
+        const deductionDesc = await getDeductionDesc(db, req.query.deductionType);
 
         if (!deductionDesc) {
             return res.status(400).json({ message: "Please select a deduction description." });
@@ -89,19 +191,20 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
         for (const loanData of await mappedData) {
             const { lnm_employeeno, lnm_employeename, lnm_amount, lnm_terms } = loanData;
 
-            const isQualified = await isEmployeeQualified(lnm_employeeno);
-            const hasExistingLoan = await isLoanExisting(lnm_employeeno, selectedDeductionCode);
+            const isQualified = await isEmployeeQualified(db, lnm_employeeno);
+            const hasExistingLoan = await isLoanExisting(db, lnm_employeeno, selectedDeductionCode);
 
             if (isQualified && !hasExistingLoan) {
                 try {
-                    const division = await getEmployeeDivision(lnm_employeeno)
-                    const transactionNumber = await getNextTransactionNumber();
+                    const division = await getEmployeeDivision(db, lnm_employeeno)
+                    const transactionNumber = await getNextTransactionNumber(db);
                     const formattedTransactionNumber = `LN-JAD-${transactionNumber.toString().padStart(6, '0')}`;
 
                     const today = new Date();
                     const loandate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
 
                     await createLoan(
+                        db,
                         formattedTransactionNumber,
                         loandate,
                         lnm_employeeno,
@@ -119,6 +222,7 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
 
                     for (let i = 1; i <= lnm_terms; i++) {
                         await createLoanPayment(
+                            db,
                             formattedTransactionNumber,
                             i,
                             (lnm_amount / lnm_terms),
@@ -130,7 +234,7 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
                         );
                     }
 
-                    await updateLnNum(transactionNumber);
+                    await updateLnNum(db, transactionNumber);
                     qualifiedData.push(loanData);
 
                 } catch (error) {
@@ -158,8 +262,11 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
 
 app.post('/fetch-descriptions', async (req, res) => {
     try {
+        const db = getConnection(req.session.user.database);
+
         const deductionType = req.body.deductionType;
-        const deductionDesc = await getDeductionDesc(deductionType);
+
+        const deductionDesc = await getDeductionDesc(db, deductionType);
 
         if (!deductionDesc) {
             return res.status(400).json({ error: 'Please select a deduction description first and upload a file.' });

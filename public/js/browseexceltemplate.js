@@ -1,7 +1,8 @@
+// public/js/browseexceltemplate.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('loanExcelFile');
     const uploadBtn = document.getElementById('uploadButton');
-    const preparedBySelect = document.getElementById('preparedBy');
     const approvedBySelect = document.getElementById('approvedBy');
     const deductionDescriptionSelect = document.getElementById('deductionDescription');
     const tableContainer = document.getElementById('excelDetailsContainer');
@@ -11,8 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedDeductionCode, preparedByCode, approvedByCode;
 
-    // Clear "Prepared By", "Approved By", and file input on page load
-    preparedBySelect.selectedIndex = 0; // Reset the "Prepared By" dropdown
+    // Clear "Approved By", and file input on page load
     approvedBySelect.selectedIndex = 0; // Reset the "Approved By" dropdown
     fileInput.value = ''; // Clear the file input
 
@@ -28,21 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedDeductionCode = event.target.value;
     });
 
-    preparedBySelect.addEventListener('change', async (event) => {
-        preparedByCode = event.target.value;
-    });
-
     approvedBySelect.addEventListener('change', async (event) => {
         approvedByCode = event.target.value;
     });
 
     uploadBtn.addEventListener('click', async () => {
         const file = fileInput.files[0];
-
-        if (preparedBySelect.selectedIndex === 0) {
-            showModal('Please select an option for Prepared By');
-            return;
-        }
         
         if (approvedBySelect.selectedIndex === 0) {
             showModal('Please select an option for Approved By');

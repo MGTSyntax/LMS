@@ -1,3 +1,5 @@
+// public/js/navbar.js
+
 document.addEventListener("DOMContentLoaded", function() {
     var loansLink = document.getElementById("loansLink");
     var loanSubMenu = document.getElementById("loanSubMenu");

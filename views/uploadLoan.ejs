@@ -30,18 +30,20 @@
 
                     <div class="selection">
                         <div class="inputContainer">
-                            <label for="preparedBy">Prepared by</label>
-                            <select name="" id="preparedBy">
-                                <option value="">Prepared by</option>
-                                <% allusers.forEach(user=> { %>
-                                    <option value="<%= user.user_empno %>">
-                                        <%= user.nameOfUser %>
-                                    </option>
-                                    <% }); %>
-                            </select>
+                            <label>Prepared by</label>
+
+                            <input type="text"
+                                    value="<%= loggedinUser.fullname %>"
+                                    readonly>
+
+                            <input type="hidden"
+                                    name="preparedByCode"
+                                    value="<%= loggedinUser.empno %>">
                         </div>
+
                         <div class="inputContainer">
                             <label for="approvedBy">Approved by</label>
+
                             <select name="" id="approvedBy">
                                 <option value="">Approved by</option>
                                 <% allusers.forEach(user=> { %>
