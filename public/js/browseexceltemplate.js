@@ -1,6 +1,7 @@
 // public/js/browseexceltemplate.js
 
 document.addEventListener('DOMContentLoaded', () => {
+
     const fileInput = document.getElementById('loanExcelFile');
     const uploadBtn = document.getElementById('uploadButton');
     const approvedBySelect = document.getElementById('approvedBy');
@@ -9,15 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const customModal = document.getElementById('modal');
     const modalMessage = document.getElementById('modalMsg');
     const span = document.getElementsByClassName('close')[0];
+    const preparedByInput = document.querySelector('input[name="preparedByCode"]');
 
-    let selectedDeductionCode, preparedByCode, approvedByCode;
+    let selectedDeductionCode, approvedByCode;
 
-    // Clear "Approved By", and file input on page load
+    if (
+        !fileInput ||
+        !uploadBtn ||
+        !approvedBySelect ||
+        !deductionDescriptionSelect
+    ) {
+        return;
+    }
+
     approvedBySelect.selectedIndex = 0; // Reset the "Approved By" dropdown
     fileInput.value = ''; // Clear the file input
-
-    // Disable upload button initially
-    uploadBtn.disabled = true;
+    uploadBtn.disabled = true; // Disable upload button initially
     
     // Check if the elements exist
     if (!deductionDescriptionSelect) {
@@ -33,7 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     uploadBtn.addEventListener('click', async () => {
+
         const file = fileInput.files[0];
+
+        const preparedByCode = preparedByInput.value;
         
         if (approvedBySelect.selectedIndex === 0) {
             showModal('Please select an option for Approved By');

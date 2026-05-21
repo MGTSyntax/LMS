@@ -159,13 +159,15 @@ app.get('/upload-loan', requireLogin, async (req, res) => {
     } 
 });
 
-app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
+app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res, next) => {
     try {
         const db = getConnection(req.session.user.database);
 
         const { selectedDeductionCode, preparedByCode, approvedByCode } = req.body;
 
         const deductionDesc = await getDeductionDesc(db, req.query.deductionType);
+
+        const loggedinUser = req.session.user.username;
 
         if (!deductionDesc) {
             return res.status(400).json({ message: "Please select a deduction description." });
@@ -198,7 +200,7 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res) => {
                 try {
                     const division = await getEmployeeDivision(db, lnm_employeeno)
                     const transactionNumber = await getNextTransactionNumber(db);
-                    const formattedTransactionNumber = `LN-JAD-${transactionNumber.toString().padStart(6, '0')}`;
+                    const formattedTransactionNumber = `LN-${loggedinUser}-${transactionNumber.toString().padStart(6, '0')}`;
 
                     const today = new Date();
                     const loandate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });

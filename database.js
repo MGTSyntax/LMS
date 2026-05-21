@@ -80,7 +80,7 @@ export async function createLoan(db, lnm_transactionno, lnm_date, lnm_employeeno
             lnm_deductioncode, lnm_amount, lnm_terms, lnm_preparedby, lnm_approvedby, 
             lnm_status, lnm_balance, lnm_originalamt, lnm_division, lnm_remarks]);
 
-        return getLoan(lnm_transactionno);
+        return getLoan(db, lnm_transactionno);
 };
 
 export async function createLoanPayment(db, lnm_transactionno, lnd_no, lnd_amount, 
@@ -93,7 +93,7 @@ export async function createLoanPayment(db, lnm_transactionno, lnd_no, lnd_amoun
         `, [lnm_transactionno, lnd_no, lnd_amount, 
             lnd_payrollperiodno, date_paid, div_paid, cur_balance, prin_balance]);
 
-        return getLoan(lnm_transactionno);
+        return getLoan(db, lnm_transactionno);
 };
 
 // Check Employee Status
