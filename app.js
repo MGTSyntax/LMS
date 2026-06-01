@@ -178,7 +178,15 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res, next) 
         const worksheet = workbook.worksheets[0];
 
         const sheetData = worksheet.getSheetValues();
-        const actualData = sheetData.slice(2).map(row => row.slice(1));
+        const actualData = sheetData
+            .slice(2)
+            .map(row => row?.slice(1))
+            .filter(row =>
+                row &&
+                row[0] !== undefined && 
+                row[0] !== null && 
+                row[0] !== '' 
+            );
 
         const mappedData = Promise.all(actualData.map(async (row) => ({
             lnm_employeeno: row[0],
@@ -191,9 +199,15 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res, next) 
         const unqualifiedData = [];
 
         for (const loanData of await mappedData) {
+            
             const { lnm_employeeno, lnm_employeename, lnm_amount, lnm_terms } = loanData;
 
+            if (!lnm_employeeno || !lnm_employeename || !lnm_amount || !lnm_terms) {
+                continue;
+            }
+
             const isQualified = await isEmployeeQualified(db, lnm_employeeno);
+
             const hasExistingLoan = await isLoanExisting(db, lnm_employeeno, selectedDeductionCode);
 
             if (isQualified && !hasExistingLoan) {
@@ -205,40 +219,55 @@ app.post('/upload-loan', upload.single('loanExcelFile'), async (req, res, next) 
                     const today = new Date();
                     const loandate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
 
+                    const numberOfDeductions = Number(lnm_terms);
+                    const deductionAmount = Number((lnm_amount / numberOfDeductions).toFixed(2));
+
                     await createLoan(
-                        db,
-                        formattedTransactionNumber,
-                        loandate,
-                        lnm_employeeno,
-                        selectedDeductionCode,
-                        lnm_amount,
-                        (lnm_amount/lnm_terms),
-                        preparedByCode,
-                        approvedByCode,
-                        'True',
-                        lnm_amount,
-                        lnm_amount,
-                        division,
+                        db, 
+                        formattedTransactionNumber, 
+                        loandate, 
+                        lnm_employeeno, 
+                        selectedDeductionCode, 
+                        lnm_amount, 
+                        deductionAmount, 
+                        preparedByCode, 
+                        approvedByCode, 
+                        'True', 
+                        lnm_amount, 
+                        lnm_amount, 
+                        division, 
                         'Saved Using Uploader'
                     );
 
-                    for (let i = 1; i <= lnm_terms; i++) {
+                    let principalBalance = Number(lnm_amount);
+
+                    for (let i = 1; i <= numberOfDeductions; i++) {
+
+                        let paymentAmount = deductionAmount;
+
+                        // Last payment gets whatever balance remains
+                        if (i === numberOfDeductions) {
+                            paymentAmount = principalBalance;
+                        }
+
+                        principalBalance = Number(principalBalance - paymentAmount).toFixed(2);
+
                         await createLoanPayment(
                             db,
                             formattedTransactionNumber,
                             i,
-                            (lnm_amount / lnm_terms),
+                            paymentAmount,
                             '--',
                             '',
                             '',
                             '',
-                            (lnm_amount / lnm_terms)
+                            principalBalance
                         );
                     }
 
                     await updateLnNum(db, transactionNumber);
                     qualifiedData.push(loanData);
-
+                    
                 } catch (error) {
                     console.log(error);
                     next(error);

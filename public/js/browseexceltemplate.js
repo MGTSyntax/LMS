@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createTextFile(unqualifiedData) {
         if (unqualifiedData && unqualifiedData.length > 0) {
             const downloadLinkContainer = document.getElementById('download-link-container');
+            downloadLinkContainer.innerHTML = '';
             const downloadLink = document.createElement('button');
 
             downloadLink.textContent = 'Download Unqualified Data (.txt)';
