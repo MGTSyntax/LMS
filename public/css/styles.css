@@ -1,79 +1,29 @@
-body {
-  font-family: sans-serif;
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6f9;
 }
 
 .whole-content {
   display: flex;
-  height: 100vh;
-}
-
-/* Left NavBar */
-.left-nav {
-  width: 200px;
-  height: 100vh;
-  background-color: #333;
-  padding: 20px;
-}
-
-.left-nav a {
-  color: #f0f0f0;
-  text-decoration: none;
-  padding: 10px;
-  display: block;
-  border-bottom: 1px solid #ddd;
-}
-
-.left-nav a:hover {
-  background-color: #555;
-}
-
-.left-nav .sub-nav {
-  display: none;
-  padding-left: 10px;
+  min-height: 100vh;
 }
 
 /* Right Content */
 .content {
   flex: 1;
-  padding: 20px;
-  background-color: #f0f0f0;
-  height: 100vh;
+  padding: 30px;
+  overflow-y: auto;
 }
 
-/* Table */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 8px;
-  border: 1px solid #ddd;
-}
-
-th {
-  text-align: left;
-}
-
-/* Pagination */
-.pagination {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.pagination a {
-  text-decoration: none;
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-}
-
-.pagination a:hover {
-  background-color: #ddd;
-}
-
-.pagination span {
-  padding: 0 10px;
+.content h1 {
+  color: #2c3e50;
+  margin-bottom: 25px;
 }
 
 /* uploadLoan.ejs */

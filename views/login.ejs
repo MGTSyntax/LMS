@@ -2,39 +2,51 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css" type="text/css">
 </head>
+
 <body>
-    <h2>Loan Management Login</h2>
+    <div class="login-container">
+        <h2>Loan Management Login</h2>
 
-    <form method="POST" action="/login">
-        <div>
-            <label>Company</label>
-            <select name="company" required>
-                <option value="">Select company</option>
+        <form method="POST" action="/login">
 
-                <% Object.keys(companies).forEach(company => { %>
-                    <option value="<%= company %>">
-                        <%= company %>
-                    </option>
-                <% }) %>
-            </select>
-        </div>
+            <div class="login-group">
+                <label>Company</label>
 
-        <div>
-            <label>Username</label>
-            <input type="text" name="username" required>
-        </div>
+                <select name="company" required>
+                    <option value="">Select company</option>
 
-        <div>
-            <label>Password</label>
-            <input type="password" name="password" required>
-        </div>
+                    <% Object.keys(companies).forEach(company=> { %>
+                        <option value="<%= company %>">
+                            <%= company %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
 
-        <button type="submit">Login</button>
-    </form>
+            <div class="login-group">
+                <label>Username</label>
+                <input type="text" name="username" required>
+            </div>
+
+            <div class="login-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <button class="login-btn" type="submit">
+                Login
+            </button>
+
+        </form>
+
+    </div>
+
 </body>
 </html>

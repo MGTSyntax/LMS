@@ -1,0 +1,38 @@
+.left-nav {
+    width: 250px;
+    background: #1f2937;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.system-title {
+    padding: 25px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.left-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+  
+    transition: .2s
+}
+
+.left-nav a:hover {
+    background-color: #374151;
+}
+
+.sub-nav {
+    display: none;
+    background: #111827;
+}
+
+.sub-nav a {
+    padding-left: 40px;
+}
