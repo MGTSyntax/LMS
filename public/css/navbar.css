@@ -1,5 +1,8 @@
+/* /public/css/navbar.css */
+
 .left-nav {
     width: 250px;
+    min-height: 100vh;
     background: #1f2937;
     color: white;
 
@@ -11,8 +14,12 @@
 
 .system-title {
     padding: 25px 20px;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+    background: #111827;
+    letter-spacing: 1px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -28,11 +35,28 @@
     background-color: #374151;
 }
 
+.left-nav a.active {
+    background: #2563eb;
+}
+
 .sub-nav {
     display: none;
-    background: #111827;
+    flex-direction: column;
+    width: 100%;
+    background: transparent;
 }
 
 .sub-nav a {
-    padding-left: 40px;
+    display: block;
+    width: 100%;
+    padding: 12px 20px 12px 40px;
+}
+
+.sub-nav a:hover {
+    background: #374151;
+}
+
+.logout-link {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, .1);
 }

@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loansLink.addEventListener("click", function(e) {
         e.preventDefault();
-        loanSubMenu.style.display = (loanSubMenu.style.display === "block") ? "none" : "block";
+        loanSubMenu.style.display = loanSubMenu.style.display = "flex";
+        // loanSubMenu.style.display = (loanSubMenu.style.display === "flex") ? "none" : "flex";
     });
 });

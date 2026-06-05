@@ -1,3 +1,5 @@
+/* /public/css/style.css */
+
 * {
   margin: 0;
   padding: 0;
@@ -26,101 +28,11 @@ body {
   margin-bottom: 25px;
 }
 
-/* uploadLoan.ejs */
-.custom-dropdown {
-  font-size: 18px;
-}
-
-.custom-dropdown span {
-  font-size: 20px;
-  font-weight: bold;
-  color: #555;
-}
-
-.selection {
-  display: flex;
-  align-items: center;
-  margin: 5px;
-}
-
-.selection select, input[type="text"] {
-  width: 350px;
-  margin-left: 5px;
-  font-size: 20px;
-  background-color: white;
-  border-radius: 4px;
-  padding: 0.5em;
-}
-
-.selection .inputContainer {
-  display: flex;
-  align-items: center;
-  margin: 10px 20px 0 0;
-}
-
-.selection .inputContainer label, .browseExcel label {
-  font-size: 18px;
-  font-weight: bold;
-  width: 150px;
-}
-
-input[type="file"] {
-  width: 340px;
-  margin-left: 5px;
-  font-size: 20px;
-  background-color: white;
-  border-radius: 4px;
-  padding: 0.2em;
-}
-
-#loanExcelFile {
-  cursor: pointer;
-}
-
-#uploadButton {
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  width: 200px;
-  padding: 10px 0;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 5px;
-}
-
-#uploadButton:hover {
-  background-color: green;
-}
-
-#uploadButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.msg {
-  text-align: center;
-  padding: 20px;
-  margin-top: 30px;
-  border-top: 1px solid green;
-  border-bottom: 1px solid green;
-}
-
-#excelDetailsContainer {
-  margin: 20px 0;
-  overflow-y: scroll;
-  max-height: 500px;
-  background-color: white;
-}
-
-#download-link-container button {
-  background-color: salmon;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 5px;
+.page-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
 }
 
 .modal {
